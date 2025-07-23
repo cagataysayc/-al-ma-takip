@@ -1,0 +1,1262 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <title>Çalışma Takip Sistemi</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 20px;
+        }
+
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #4CAF50;
+            padding-bottom: 10px;
+        }
+
+        .form-section {
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 15px;
+            align-items: center;
+        }
+
+        .form-group {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #555;
+        }
+
+        input[type="number"], input[type="date"], input[type="file"] {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .btn-primary {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #45a049;
+        }
+
+        .btn-secondary {
+            background-color: #2196F3;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #1976D2;
+        }
+
+        .btn-danger {
+            background-color: #f44336;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #d32f2f;
+        }
+
+        .stats-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            border-left: 4px solid #4CAF50;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .records-section {
+            margin-top: 20px;
+        }
+
+        .records-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .records-table th, .records-table td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+
+        .records-table th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+
+        .records-table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .tolerance-info {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+        .status-positive {
+            color: #4CAF50;
+            font-weight: bold;
+        }
+
+        .status-negative {
+            color: #f44336;
+            font-weight: bold;
+        }
+
+        .status-neutral {
+            color: #666;
+            font-weight: bold;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .alert {
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+
+        .alert-error {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+
+        .daily-tracking-alert {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            border-left: 4px solid #fff;
+        }
+
+        .daily-tracking-alert.positive {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            box-shadow: 0 4px 15px rgba(245, 87, 108, 0.3);
+        }
+
+        .daily-tracking-alert.negative {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            box-shadow: 0 4px 15px rgba(79, 172, 254, 0.3);
+        }
+
+        .daily-tracking-alert.neutral {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            color: #333;
+            box-shadow: 0 4px 15px rgba(168, 237, 234, 0.3);
+        }
+
+        .tracking-content {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .tracking-icon {
+            font-size: 20px;
+        }
+
+        .tracking-message {
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        /* Mobil Responsive Tasarım */
+        @media screen and (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
+            .container {
+                padding: 15px;
+            }
+            
+            .daily-tracking-alert {
+                padding: 12px 15px;
+                margin-bottom: 15px;
+                font-size: 14px;
+            }
+            
+            .tracking-message {
+                font-size: 14px;
+                font-weight: 600;
+            }
+            
+            .tracking-icon {
+                font-size: 18px;
+            }
+            
+            h1 {
+                font-size: 24px;
+                margin-bottom: 20px;
+            }
+            
+            .form-row {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .form-group {
+                width: 100%;
+            }
+            
+            .checkbox-group {
+                justify-content: flex-start;
+            }
+            
+            .button-group {
+                flex-direction: column;
+                width: 100%;
+            }
+            
+            .button-group button {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+            
+            .stats-section {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .tolerance-info {
+                font-size: 14px;
+                padding: 15px;
+            }
+            
+            .records-table {
+                font-size: 12px;
+                overflow-x: auto;
+                display: block;
+                white-space: nowrap;
+            }
+            
+            .records-table thead,
+            .records-table tbody,
+            .records-table th,
+            .records-table td,
+            .records-table tr {
+                display: block;
+            }
+            
+            .records-table thead tr {
+                position: absolute;
+                top: -9999px;
+                left: -9999px;
+            }
+            
+            .records-table tr {
+                border: 1px solid #ccc;
+                margin-bottom: 10px;
+                padding: 10px;
+                border-radius: 5px;
+                background-color: #f9f9f9;
+            }
+            
+            .records-table td {
+                border: none;
+                border-bottom: 1px solid #eee;
+                position: relative;
+                padding-left: 50% !important;
+                padding-top: 10px;
+                padding-bottom: 10px;
+                text-align: left !important;
+                white-space: normal;
+            }
+            
+            .records-table td:before {
+                content: attr(data-label) ": ";
+                position: absolute;
+                left: 6px;
+                width: 45%;
+                padding-right: 10px;
+                white-space: nowrap;
+                font-weight: bold;
+                color: #666;
+            }
+            
+            input[type="number"], input[type="date"], input[type="file"] {
+                width: 100%;
+                font-size: 16px; /* iOS zoom önleme */
+            }
+            
+            .daily-tracking-alert.hidden {
+                display: none !important;
+            }
+            
+            .daily-tracking-alert {
+                display: block !important;
+                width: 100%;
+                box-sizing: border-box;
+            }
+        }
+        
+        @media screen and (max-width: 480px) {
+            .container {
+                padding: 10px;
+            }
+            
+            h1 {
+                font-size: 20px;
+            }
+            
+            .stat-value {
+                font-size: 20px;
+            }
+            
+            .stat-label {
+                font-size: 12px;
+            }
+            
+            button {
+                padding: 15px 20px;
+                font-size: 18px;
+            }
+        }
+        
+        /* WebView ve Touch Optimizasyonları */
+        * {
+            -webkit-tap-highlight-color: transparent;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+        
+        input, textarea, select {
+            -webkit-user-select: text;
+            user-select: text;
+        }
+        
+        button {
+            -webkit-appearance: none;
+            appearance: none;
+            border: none;
+            outline: none;
+        }
+        
+        input[type="number"], input[type="date"], input[type="file"] {
+            -webkit-appearance: none;
+            appearance: none;
+            outline: none;
+        }
+        
+        /* WebView içinde çalışma durumu için ek stil */
+        .webview-warning {
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+            color: #333;
+            padding: 12px 20px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 14px;
+            text-align: center;
+            border-left: 4px solid #ff6b6b;
+        }
+        
+        .storage-status {
+            font-size: 12px;
+            padding: 8px 12px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        
+        .storage-status.localStorage { background-color: #d4edda; color: #155724; }
+        .storage-status.sessionStorage { background-color: #fff3cd; color: #856404; }
+        .storage-status.cookies { background-color: #cce5ff; color: #004085; }
+        .storage-status.none { background-color: #f8d7da; color: #721c24; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Çalışma Takip Sistemi</h1>
+        
+        <div class="tolerance-info">
+            <strong>Bilgi:</strong> Günlük standart çalışma süresi 450 dakika (7.5 saat). Aylık hedef oran: 16.66. Günlük tolerans: ±5 dakika (445-455 arası puan kaybetmez).
+        </div>
+
+        <div id="dailyTrackingAlert" class="daily-tracking-alert hidden">
+            <div class="tracking-content">
+                <span class="tracking-icon">📅</span>
+                <span id="trackingMessage" class="tracking-message"></span>
+            </div>
+        </div>
+
+        <div class="form-section">
+            <h2>Günlük Çalışma Girdisi</h2>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="workDate">Tarih:</label>
+                    <input type="date" id="workDate" required>
+                </div>
+                <div class="form-group">
+                    <label for="workMinutes">Çalışma Dakikası:</label>
+                    <input type="number" id="workMinutes" min="0" max="540" placeholder="450" required>
+                </div>
+                <div class="form-group">
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="isRevised">
+                        <label for="isRevised">Bugün revize yapıldı</label>
+                    </div>
+                </div>
+            </div>
+            <div class="button-group">
+                <button type="button" class="btn-primary" onmousedown="triggerAddRecord()" ontouchstart="triggerAddRecord()">Kayıt Ekle</button>
+                <button type="button" class="btn-secondary" onmousedown="triggerCalculateStats()" ontouchstart="triggerCalculateStats()">Aylık İstatistik Hesapla</button>
+            </div>
+        </div>
+
+        <div class="stats-section">
+            <div class="stat-card">
+                <div class="stat-value" id="totalDays">0</div>
+                <div class="stat-label">Toplam Çalışma Günü</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="totalMinutes">0</div>
+                <div class="stat-label">Toplam Çalışma Dakikası</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="monthlyRatio">0.00</div>
+                <div class="stat-label">Aylık Çalışma Oranı</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="averageDaily">0</div>
+                <div class="stat-label">Günlük Ortalama (dk)</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="monthlyDiff">0</div>
+                <div class="stat-label">Genel Fazla Çalışma (dk)</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="monthlyDeficit">0</div>
+                <div class="stat-label">Genel Eksik Çalışma (dk)</div>
+            </div>
+        </div>
+
+        <div class="form-section">
+            <h2>Veri Yönetimi</h2>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="jsonFile">JSON Dosyası Yükle:</label>
+                    <input type="file" id="jsonFile" accept=".json" onchange="triggerLoadJson()">
+                </div>
+                <div class="button-group">
+                    <button type="button" class="btn-secondary" onmousedown="triggerDownloadJson()" ontouchstart="triggerDownloadJson()">JSON İndir</button>
+                    <button type="button" class="btn-danger" onmousedown="triggerClearData()" ontouchstart="triggerClearData()">Tüm Verileri Temizle</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="records-section">
+            <h2>Çalışma Kayıtları</h2>
+            <table class="records-table">
+                <thead>
+                    <tr>
+                        <th>Tarih</th>
+                        <th>Çalışma Dakikası</th>
+                        <th>Fark (Standart: 450dk)</th>
+                        <th>Günlük Tolerans</th>
+                        <th>Revize</th>
+                        <th>İşlem</th>
+                    </tr>
+                </thead>
+                <tbody id="recordsTableBody">
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        var workRecords = [];
+        var DAILY_TARGET = 450; // dakika
+        var MONTHLY_TARGET_RATIO = 16.66;
+        var TOLERANCE = 5; // dakika
+        var storageAvailable = false;
+        var storageMethod = 'none';
+
+        // Storage desteğini kontrol et
+        function checkStorageSupport() {
+            // localStorage test
+            try {
+                var test = 'storageTest';
+                localStorage.setItem(test, test);
+                localStorage.removeItem(test);
+                storageAvailable = true;
+                storageMethod = 'localStorage';
+                return;
+            } catch(e) {}
+
+            // sessionStorage test
+            try {
+                var test = 'storageTest';
+                sessionStorage.setItem(test, test);
+                sessionStorage.removeItem(test);
+                storageAvailable = true;
+                storageMethod = 'sessionStorage';
+                return;
+            } catch(e) {}
+
+            // Cookie test
+            try {
+                document.cookie = 'storageTest=test; path=/';
+                if (document.cookie.indexOf('storageTest=test') !== -1) {
+                    storageAvailable = true;
+                    storageMethod = 'cookies';
+                    // Test cookie'yi temizle
+                    document.cookie = 'storageTest=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+                    return;
+                }
+            } catch(e) {}
+
+            // Hiçbir storage yöntemi çalışmıyor
+            storageAvailable = false;
+            storageMethod = 'none';
+        }
+
+        // Trigger fonksiyonları - iOS WebView için
+        function triggerAddRecord() {
+            setTimeout(addWorkEntry, 50);
+        }
+
+        function triggerCalculateStats() {
+            setTimeout(calculateMonthlyStats, 50);
+        }
+
+        function triggerDownloadJson() {
+            setTimeout(downloadJsonFile, 50);
+        }
+
+        function triggerClearData() {
+            setTimeout(clearAllData, 50);
+        }
+
+        function triggerLoadJson() {
+            setTimeout(loadJsonFile, 50);
+        }
+
+        function triggerDeleteRecord(date) {
+            setTimeout(function() {
+                deleteRecord(date);
+            }, 50);
+        }
+
+        // Sayfa yüklendiğinde verileri yükle
+        window.onload = function() {
+            checkStorageSupport();
+            loadDataFromStorage();
+            setTodayDate();
+            updateDisplay();
+            showStorageStatus();
+        };
+
+        function detectWebView() {
+            var userAgent = navigator.userAgent || navigator.vendor || window.opera;
+            
+            // WhatsApp WebView detection
+            if (userAgent.indexOf('WhatsApp') !== -1) {
+                return 'WhatsApp';
+            }
+            
+            // General WebView detection
+            if (userAgent.indexOf('wv') !== -1 ||
+                userAgent.indexOf('WebView') !== -1 ||
+                (userAgent.indexOf('Chrome') !== -1 && userAgent.indexOf('Version') !== -1)) {
+                return 'WebView';
+            }
+            
+            return false;
+        }
+
+        function showStorageStatus() {
+            var webViewType = detectWebView();
+            var container = document.querySelector('.container');
+            
+            // WebView tespit edilirse tarayıcıya yönlendir
+            if (webViewType) {
+                var currentUrl = window.location.href;
+                
+                // WebView warning ve browser açma butonu ekle
+                var webViewWarning = document.createElement('div');
+                webViewWarning.className = 'webview-warning';
+                webViewWarning.innerHTML =
+                    '<div style="text-align: center; padding: 10px;">' +
+                    '<h3>🔧 ' + webViewType + ' WebView Algılandı</h3>' +
+                    '<p style="margin: 10px 0;">Bu sistem WhatsApp içinde tam çalışamıyor.</p>' +
+                    '<p style="margin: 10px 0; font-weight: bold;">Lütfen tarayıcıda açın:</p>' +
+                    '<button onclick="openInBrowser()" style="background: #25D366; color: white; padding: 15px 30px; border: none; border-radius: 8px; font-size: 16px; margin: 5px; cursor: pointer;">📱 Safari/Chrome\'da Aç</button>' +
+                    '<br><button onclick="copyLinkToClipboard()" style="background: #1877F2; color: white; padding: 15px 30px; border: none; border-radius: 8px; font-size: 16px; margin: 5px; cursor: pointer;">📋 Linki Kopyala</button>' +
+                    '<p style="font-size: 12px; margin-top: 10px; color: #666;">Kopyaladıktan sonra Safari veya Chrome\'da yapıştırın</p>' +
+                    '</div>';
+                container.insertBefore(webViewWarning, container.children[1]);
+                
+                // Ana form'u gizle
+                var formSections = document.querySelectorAll('.form-section, .stats-section, .records-section');
+                for (var i = 0; i < formSections.length; i++) {
+                    formSections[i].style.display = 'none';
+                }
+            }
+            
+            // Storage status ekle
+            var statusDiv = document.createElement('div');
+            statusDiv.className = 'storage-status ' + storageMethod;
+            
+            var statusMessage = '';
+            var statusIcon = '';
+            
+            if (!storageAvailable) {
+                statusMessage = 'Veri saklama desteği yok - Veriler kaybolabilir';
+                statusIcon = '❌';
+            } else if (storageMethod === 'localStorage') {
+                statusMessage = 'Kalıcı veri saklama aktif - Veriler güvenli';
+                statusIcon = '✅';
+            } else if (storageMethod === 'sessionStorage') {
+                statusMessage = 'Geçici veri saklama - Tarayıcı kapanınca veriler silinir';
+                statusIcon = '⚠️';
+            } else if (storageMethod === 'cookies') {
+                statusMessage = 'Cookie veri saklama - 30 gün boyunca saklanır';
+                statusIcon = '🍪';
+            }
+            
+            statusDiv.innerHTML = statusIcon + ' ' + statusMessage;
+            container.insertBefore(statusDiv, container.querySelector('.form-section'));
+            
+            // Eğer veri saklama sorunu varsa uyarı alert'i de göster
+            if (!storageAvailable) {
+                setTimeout(function() {
+                    showAlert('⚠️ Veri saklama desteği bulunamadı. Veriler sayfa yenilendiğinde kaybolabilir. Normal tarayıcıda açmayı deneyin.', 'error');
+                }, 1000);
+            }
+        }
+
+        function setTodayDate() {
+            var today = new Date();
+            var year = today.getFullYear();
+            var month = ('0' + (today.getMonth() + 1)).slice(-2);
+            var day = ('0' + today.getDate()).slice(-2);
+            var dateStr = year + '-' + month + '-' + day;
+            document.getElementById('workDate').value = dateStr;
+        function openInBrowser() {
+            var currentUrl = window.location.href;
+            
+            // iOS/Safari için özel URL scheme denemesi
+            var safariUrl = 'x-web-search://?url=' + encodeURIComponent(currentUrl);
+            var chromeUrl = 'googlechrome://' + currentUrl.replace('http://', '').replace('https://', '');
+            
+            // Önce Safari deneme
+            try {
+                window.location.href = safariUrl;
+                setTimeout(function() {
+                    // Safari açılmazsa Chrome deneme
+                    window.location.href = chromeUrl;
+                }, 1000);
+            } catch(e) {
+                // Her ikisi de çalışmazsa normal tarayıcıda açma
+                window.open(currentUrl, '_blank');
+            }
+            
+            // Fallback: Link kopyalama uyarısı
+            setTimeout(function() {
+                alert('Tarayıcı açılmadıysa, linki kopyalayıp manuel olarak Safari/Chrome\'da açın:\n\n' + currentUrl);
+            }, 2000);
+        }
+
+        function copyLinkToClipboard() {
+            var currentUrl = window.location.href;
+            
+            // Modern clipboard API denemesi
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(currentUrl).then(function() {
+                    alert('✅ Link kopyalandı! Şimdi Safari/Chrome\'da yapıştırın.');
+                }).catch(function() {
+                    fallbackCopyTextToClipboard(currentUrl);
+                });
+            } else {
+                fallbackCopyTextToClipboard(currentUrl);
+            }
+        }
+
+        function fallbackCopyTextToClipboard(text) {
+            // Fallback method
+            var textArea = document.createElement('textarea');
+            textArea.value = text;
+            textArea.style.position = 'fixed';
+            textArea.style.top = '-1000px';
+            textArea.style.left = '-1000px';
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            
+            try {
+                var successful = document.execCommand('copy');
+                if (successful) {
+                    alert('✅ Link kopyalandı! Şimdi Safari/Chrome\'da yapıştırın.');
+                } else {
+                    showManualCopyDialog(text);
+                }
+            } catch (err) {
+                showManualCopyDialog(text);
+            }
+            
+            document.body.removeChild(textArea);
+        }
+
+        function showManualCopyDialog(text) {
+            alert('📋 Manuel kopyalama gerekli:\n\n' + text + '\n\nBu linki kopyalayıp Safari/Chrome\'da açın.');
+        }
+
+        }
+
+        function addWorkEntry() {
+            try {
+                var dateElement = document.getElementById('workDate');
+                var minutesElement = document.getElementById('workMinutes');
+                var revisedElement = document.getElementById('isRevised');
+                
+                if (!dateElement || !minutesElement || !revisedElement) {
+                    showAlert('Form elemanları bulunamadı. Sayfayı yenileyin.', 'error');
+                    return;
+                }
+                
+                var date = dateElement.value;
+                var minutesInput = minutesElement.value;
+                var isRevised = revisedElement.checked;
+
+                // Input validation
+                if (!date || date === '') {
+                    showAlert('Lütfen tarih seçin.', 'error');
+                    return;
+                }
+
+                if (!minutesInput || minutesInput === '') {
+                    showAlert('Lütfen çalışma dakikası girin.', 'error');
+                    return;
+                }
+
+                var minutes = parseInt(minutesInput, 10);
+                if (isNaN(minutes) || minutes < 0) {
+                    showAlert('Geçerli bir çalışma dakikası girin (0 veya daha büyük).', 'error');
+                    return;
+                }
+
+                if (minutes > 540) {
+                    showAlert('Maksimum çalışma süresi 540 dakika (9 saat) olabilir.', 'error');
+                    return;
+                }
+
+                // Aynı tarihte kayıt var mı kontrol et
+                var existingIndex = -1;
+                for (var i = 0; i < workRecords.length; i++) {
+                    if (workRecords[i].date === date) {
+                        existingIndex = i;
+                        break;
+                    }
+                }
+                
+                var shouldUpdate = true;
+                if (existingIndex !== -1) {
+                    shouldUpdate = confirm('Bu tarihte zaten kayıt var. Güncellemek istiyor musunuz?');
+                    if (shouldUpdate) {
+                        workRecords[existingIndex] = { date: date, minutes: minutes, isRevised: isRevised };
+                        showAlert('Kayıt güncellendi.', 'success');
+                    }
+                } else {
+                    workRecords.push({ date: date, minutes: minutes, isRevised: isRevised });
+                    showAlert('Kayıt eklendi.', 'success');
+                }
+
+                if (shouldUpdate) {
+                    if (saveDataToStorage()) {
+                        updateDisplay();
+                        clearForm();
+                    } else {
+                        showAlert('Kayıt başarısız! Veri saklama sorunu.', 'error');
+                    }
+                }
+            } catch (error) {
+                showAlert('Kayıt eklerken hata oluştu: ' + error.message, 'error');
+                console.error('addWorkEntry error:', error);
+            }
+        }
+
+        function clearForm() {
+            document.getElementById('workMinutes').value = '';
+            document.getElementById('isRevised').checked = false;
+            setTodayDate();
+        }
+
+        function updateDisplay() {
+            updateRecordsTable();
+            calculateMonthlyStats();
+            updateDailyTrackingAlert();
+        }
+
+        function updateDailyTrackingAlert() {
+            var today = new Date();
+            var year = today.getFullYear();
+            var month = ('0' + (today.getMonth() + 1)).slice(-2);
+            var day = ('0' + today.getDate()).slice(-2);
+            var todayStr = year + '-' + month + '-' + day;
+            
+            var alertElement = document.getElementById('dailyTrackingAlert');
+            var messageElement = document.getElementById('trackingMessage');
+            
+            // Tüm kayıtları al (bugünkü kayıt da dahil)
+            var previousRecords = workRecords.slice(); // Tüm kayıtları kopyala
+            
+            if (previousRecords.length === 0) {
+                alertElement.classList.add('hidden');
+                return;
+            }
+            
+            // Önceki günlerin toplam fazla/eksik durumunu hesapla (tolerans dahil)
+            var totalBalance = 0;
+            
+            for (var i = 0; i < previousRecords.length; i++) {
+                var record = previousRecords[i];
+                var diff = record.minutes - DAILY_TARGET;
+                var toleranceStatus = getToleranceStatus(diff);
+                
+                if (toleranceStatus.class === 'status-neutral') {
+                    // Tolerans içindeyse hiçbir şey ekleme (445-455 arası)
+                } else {
+                    // Tolerans dışındaysa gerçek farkı ekle
+                    totalBalance += diff;
+                }
+            }
+            
+            // Mesajı ve stili belirle - sadece 6+ dakika farklar için göster
+            if (Math.abs(totalBalance) < 6) {
+                // 6 dakika altı farklar için balon gösterme
+                alertElement.classList.add('hidden');
+                return;
+            }
+            
+            if (totalBalance > 0) {
+                // Fazla çalışma var - bugün eksik çal��şabilir
+                messageElement.textContent = 'Bugün ' + totalBalance + ' dakika eksik çalışabilirsin! 💪';
+                alertElement.className = 'daily-tracking-alert positive';
+                document.querySelector('.tracking-icon').textContent = '😊';
+            } else if (totalBalance < 0) {
+                // Eksik çalışma var - bugün fazla çalışması gerekiyor
+                var deficit = Math.abs(totalBalance);
+                messageElement.textContent = 'Bugün ' + deficit + ' dakika fazla çalışman gerekiyor! 🎯';
+                alertElement.className = 'daily-tracking-alert negative';
+                document.querySelector('.tracking-icon').textContent = '💼';
+            }
+            
+            alertElement.classList.remove('hidden');
+        }
+
+        function updateRecordsTable() {
+            var tbody = document.getElementById('recordsTableBody');
+            tbody.innerHTML = '';
+
+            // Tarihe göre sırala (en yeni üstte)
+            var sortedRecords = workRecords.slice().sort(function(a, b) {
+                return new Date(b.date) - new Date(a.date);
+            });
+
+            for (var i = 0; i < sortedRecords.length; i++) {
+                var record = sortedRecords[i];
+                var row = tbody.insertRow();
+                var diff = record.minutes - DAILY_TARGET;
+                var toleranceStatus = getToleranceStatus(diff);
+                
+                // Gerçek farkı göster (tolerans uygulanmadan)
+                var displayDiff = diff;
+                var diffSign = displayDiff >= 0 ? '+' : '';
+                var diffClass = displayDiff >= 0 ? 'status-positive' : 'status-negative';
+                var revizeText = record.isRevised ? 'Evet' : 'Hayır';
+                
+                row.innerHTML = '<td data-label="Tarih">' + formatDate(record.date) + '</td>' +
+                    '<td data-label="Çalışma Dakikası">' + record.minutes + '</td>' +
+                    '<td data-label="Fark" class="' + diffClass + '">' + diffSign + displayDiff + '</td>' +
+                    '<td data-label="Günlük Tolerans" class="' + toleranceStatus.class + '">' + toleranceStatus.text + '</td>' +
+                    '<td data-label="Revize">' + revizeText + '</td>' +
+                    '<td data-label="İşlem">' +
+                        '<button type="button" class="btn-danger" onmousedown="triggerDeleteRecord(\'' + record.date + '\')" ontouchstart="triggerDeleteRecord(\'' + record.date + '\')">Sil</button>' +
+                    '</td>';
+            }
+        }
+
+        function getToleranceStatus(diff) {
+            if (Math.abs(diff) <= TOLERANCE) {
+                return { class: 'status-neutral', text: 'Tolerans İçinde' };
+            } else if (diff > TOLERANCE) {
+                return { class: 'status-positive', text: 'Fazla Çalışma' };
+            } else {
+                return { class: 'status-negative', text: 'Eksik Çalışma' };
+            }
+        }
+
+        function formatDate(dateStr) {
+            var date = new Date(dateStr);
+            // toLocaleDateString desteği kontrolü
+            if (typeof date.toLocaleDateString === 'function') {
+                try {
+                    return date.toLocaleDateString('tr-TR');
+                } catch (e) {
+                    // Fallback if tr-TR not supported
+                }
+            }
+            
+            // Manual formatting fallback
+            var day = ('0' + date.getDate()).slice(-2);
+            var month = ('0' + (date.getMonth() + 1)).slice(-2);
+            var year = date.getFullYear();
+            return day + '.' + month + '.' + year;
+        }
+
+        function calculateMonthlyStats() {
+            var totalDays = workRecords.length;
+            var totalMinutes = 0;
+            for (var i = 0; i < workRecords.length; i++) {
+                totalMinutes += workRecords[i].minutes;
+            }
+            var averageDaily = totalDays > 0 ? Math.round(totalMinutes / totalDays) : 0;
+            
+            // Aylık oran hesaplama için tolerans içindeki günleri ve revize yapılan günleri 450 dakika olarak say
+            var adjustedTotalMinutes = 0;
+            for (var i = 0; i < workRecords.length; i++) {
+                var record = workRecords[i];
+                var diff = record.minutes - DAILY_TARGET;
+                var toleranceStatus = getToleranceStatus(diff);
+                
+                if (record.isRevised) {
+                    // Revize yapılan günlerde her zaman 450 dakika olarak say
+                    adjustedTotalMinutes += DAILY_TARGET;
+                } else if (toleranceStatus.class === 'status-neutral') {
+                    // Tolerans içindeyse 450 dakika olarak say
+                    adjustedTotalMinutes += DAILY_TARGET;
+                } else {
+                    // Tolerans dışındaysa gerçek dakikayı kullan
+                    adjustedTotalMinutes += record.minutes;
+                }
+            }
+            
+            // Aylık oran hesaplama: (Tolerans ayarlı toplam dakika / (Gün sayısı * 450)) * 16.66
+            var monthlyRatio = totalDays > 0 ? (adjustedTotalMinutes / (totalDays * DAILY_TARGET)) * MONTHLY_TARGET_RATIO : 0;
+            
+            // Genel fazla ve eksik çalışma hesaplama
+            var totalExtraWork = 0;
+            var totalDeficitWork = 0;
+            
+            for (var i = 0; i < workRecords.length; i++) {
+                var record = workRecords[i];
+                var diff = record.minutes - DAILY_TARGET;
+                var toleranceStatus = getToleranceStatus(diff);
+                
+                if (toleranceStatus.class === 'status-neutral') {
+                    // Tolerans içindeyse hiçbir şey ekleme
+                } else if (diff > TOLERANCE) {
+                    // Fazla çalışma - gerçek farkı ekle
+                    totalExtraWork += diff;
+                } else if (diff < -TOLERANCE) {
+                    // Eksik çalışma - pozitif değer olarak ekle
+                    totalDeficitWork += Math.abs(diff);
+                }
+            }
+            
+            document.getElementById('totalDays').textContent = totalDays;
+            document.getElementById('totalMinutes').textContent = totalMinutes;
+            document.getElementById('monthlyRatio').textContent = monthlyRatio.toFixed(2);
+            document.getElementById('averageDaily').textContent = averageDaily;
+            
+            // Fazla çalışma
+            var monthlyDiffElement = document.getElementById('monthlyDiff');
+            monthlyDiffElement.textContent = totalExtraWork > 0 ? '+' + totalExtraWork : '0';
+            monthlyDiffElement.className = 'stat-value ' + (totalExtraWork > 0 ? 'status-positive' : 'status-neutral');
+            
+            // Eksik çalışma
+            var monthlyDeficitElement = document.getElementById('monthlyDeficit');
+            monthlyDeficitElement.textContent = totalDeficitWork > 0 ? '-' + totalDeficitWork : '0';
+            monthlyDeficitElement.className = 'stat-value ' + (totalDeficitWork > 0 ? 'status-negative' : 'status-neutral');
+        }
+
+        function deleteRecord(date) {
+            if (confirm('Bu kaydı silmek istediğinizden emin misiniz?')) {
+                var newRecords = [];
+                for (var i = 0; i < workRecords.length; i++) {
+                    if (workRecords[i].date !== date) {
+                        newRecords.push(workRecords[i]);
+                    }
+                }
+                workRecords = newRecords;
+                if (saveDataToStorage()) {
+                    updateDisplay();
+                    showAlert('Kayıt silindi.', 'success');
+                }
+            }
+        }
+
+        function downloadJsonFile() {
+            try {
+                var data = {
+                    records: workRecords,
+                    exportDate: new Date().toISOString(),
+                    totalRecords: workRecords.length
+                };
+
+                var jsonString = JSON.stringify(data, null, 2);
+                
+                // Blob desteği kontrolü
+                if (typeof Blob !== 'undefined' && typeof URL !== 'undefined') {
+                    var blob = new Blob([jsonString], { type: 'application/json' });
+                    var url = URL.createObjectURL(blob);
+                    
+                    var a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'calisma-kayitlari-' + new Date().toISOString().split('T')[0] + '.json';
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                    
+                    showAlert('JSON dosyası indirildi.', 'success');
+                } else {
+                    // Fallback: JSON'u yeni pencerede göster
+                    var newWindow = window.open('', '_blank');
+                    newWindow.document.write('<pre>' + jsonString + '</pre>');
+                    newWindow.document.title = 'Çalışma Kayıtları JSON';
+                    showAlert('JSON verisi yeni pencerede açıldı. İçeriği kopyalayıp .json dosyası olarak kaydedin.', 'success');
+                }
+            } catch (error) {
+                showAlert('JSON indirme hatası: ' + error.message, 'error');
+            }
+        }
+
+        function loadJsonFile() {
+            var file = document.getElementById('jsonFile').files[0];
+            if (!file) return;
+
+            if (typeof FileReader === 'undefined') {
+                showAlert('Bu tarayıcı dosya okuma özelliğini desteklemiyor.', 'error');
+                return;
+            }
+
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    var data = JSON.parse(e.target.result);
+                    
+                    if (data.records && Array.isArray(data.records)) {
+                        if (confirm('Mevcut veriler silinecek ve yüklenen veriler kullanılacak. Onaylıyor musunuz?')) {
+                            workRecords = data.records;
+                            if (saveDataToStorage()) {
+                                updateDisplay();
+                                showAlert(data.records.length + ' kayıt yüklendi.', 'success');
+                            }
+                        }
+                    } else {
+                        showAlert('Geçersiz JSON formatı.', 'error');
+                    }
+                } catch (error) {
+                    showAlert('JSON dosyası okunamadı: ' + error.message, 'error');
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function clearAllData() {
+            if (confirm('Tüm verileri silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.')) {
+                workRecords = [];
+                if (saveDataToStorage()) {
+                    updateDisplay();
+                    showAlert('Tüm veriler temizlendi.', 'success');
+                }
+            }
+        }
+
+        function saveDataToStorage() {
+            if (!storageAvailable) {
+                console.warn('Storage mevcut değil, veri kaydedilemedi');
+                return false;
+            }
+
+            var dataString = JSON.stringify(workRecords);
+            
+            try {
+                if (storageMethod === 'localStorage') {
+                    localStorage.setItem('workRecords', dataString);
+                } else if (storageMethod === 'sessionStorage') {
+                    sessionStorage.setItem('workRecords', dataString);
+                } else if (storageMethod === 'cookies') {
+                    // Cookie için veri boyutunu kontrol et (4KB limit)
+                    if (dataString.length > 3000) {
+                        // Veriler çok büyükse sadece son 20 kaydı sakla
+                        var limitedRecords = workRecords.slice(-20);
+                        dataString = JSON.stringify(limitedRecords);
+                        workRecords = limitedRecords;
+                        showAlert('⚠️ Veri boyutu sınırı aşıldı. Son 20 kayıt saklandı.', 'error');
+                    }
+                    
+                    // 30 gün süre ile cookie kaydet
+                    var expireDate = new Date();
+                    expireDate.setTime(expireDate.getTime() + (30 * 24 * 60 * 60 * 1000));
+                    var expires = '; expires=' + expireDate.toUTCString();
+                    document.cookie = 'workRecords=' + encodeURIComponent(dataString) + expires + '; path=/';
+                }
+                return true;
+            } catch (error) {
+                console.error('Veri kaydedilemedi:', error);
+                showAlert('⚠️ Veri kaydedilemedi: ' + error.message, 'error');
+                return false;
+            }
+        }
+
+        function loadDataFromStorage() {
+            if (!storageAvailable) {
+                workRecords = [];
+                return;
+            }
+
+            var stored = null;
+            
+            try {
+                if (storageMethod === 'localStorage') {
+                    stored = localStorage.getItem('workRecords');
+                } else if (storageMethod === 'sessionStorage') {
+                    stored = sessionStorage.getItem('workRecords');
+                } else if (storageMethod === 'cookies') {
+                    var nameEQ = 'workRecords=';
+                    var ca = document.cookie.split(';');
+                    for (var i = 0; i < ca.length; i++) {
+                        var c = ca[i];
+                        while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+                        if (c.indexOf(nameEQ) === 0) {
+                            stored = decodeURIComponent(c.substring(nameEQ.length, c.length));
+                            break;
+                        }
+                    }
+                }
+                
+                if (stored) {
+                    workRecords = JSON.parse(stored);
+                } else {
+                    workRecords = [];
+                }
+            } catch (error) {
+                console.error('Veriler yüklenemedi:', error);
+                workRecords = [];
+            }
+        }
+
+        function showAlert(message, type) {
+            // Önceki alert'leri temizle
+            const existingAlerts = document.querySelectorAll('.alert');
+            existingAlerts.forEach(alert => alert.remove());
+
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type}`;
+            alert.textContent = message;
+            
+            const container = document.querySelector('.container');
+            container.insertBefore(alert, container.firstChild.nextSibling);
+
+            // 3 saniye sonra alert'i kaldır
+            setTimeout(() => {
+                alert.remove();
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
